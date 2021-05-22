@@ -1,0 +1,424 @@
+%General Mission Analysis Tool(GMAT) Script
+%Created: 2021-05-06 14:35:54
+
+
+%----------------------------------------
+%---------- User-Modified Default Celestial Bodies
+%----------------------------------------
+
+GMAT Earth.OrbitColor = [0 255 0];
+
+%----------------------------------------
+%---------- User-Defined Calculated Points
+%----------------------------------------
+
+Create LibrationPoint SML1;
+GMAT SML1.OrbitColor = GreenYellow;
+GMAT SML1.TargetColor = DarkGray;
+GMAT SML1.Primary = Sun;
+GMAT SML1.Secondary = Mars;
+GMAT SML1.Point = L1;
+
+%----------------------------------------
+%---------- Spacecraft
+%----------------------------------------
+
+Create Spacecraft FuelDepot;
+GMAT FuelDepot.DateFormat = UTCGregorian;
+GMAT FuelDepot.Epoch = '01 Oct 2024 00:00:00.000';
+GMAT FuelDepot.CoordinateSystem = EarthMJ2000Eq;
+GMAT FuelDepot.DisplayStateType = Keplerian;
+GMAT FuelDepot.SMA = 6771.010000000001;
+GMAT FuelDepot.ECC = 7.241976879635233e-16;
+GMAT FuelDepot.INC = 21.29545423885701;
+GMAT FuelDepot.RAAN = 337.54766317085;
+GMAT FuelDepot.AOP = 0;
+GMAT FuelDepot.TA = 0;
+GMAT FuelDepot.DryMass = 1000;
+GMAT FuelDepot.Cd = 2.2;
+GMAT FuelDepot.Cr = 1.8;
+GMAT FuelDepot.DragArea = 15;
+GMAT FuelDepot.SRPArea = 1;
+GMAT FuelDepot.SPADDragScaleFactor = 1;
+GMAT FuelDepot.SPADSRPScaleFactor = 1;
+GMAT FuelDepot.Tanks = {ChemicalTank1};
+GMAT FuelDepot.NAIFId = -10021001;
+GMAT FuelDepot.NAIFIdReferenceFrame = -9021001;
+GMAT FuelDepot.OrbitColor = Red;
+GMAT FuelDepot.TargetColor = Teal;
+GMAT FuelDepot.OrbitErrorCovariance = [ 1e+70 0 0 0 0 0 ; 0 1e+70 0 0 0 0 ; 0 0 1e+70 0 0 0 ; 0 0 0 1e+70 0 0 ; 0 0 0 0 1e+70 0 ; 0 0 0 0 0 1e+70 ];
+GMAT FuelDepot.CdSigma = 1e+70;
+GMAT FuelDepot.CrSigma = 1e+70;
+GMAT FuelDepot.Id = 'SatId';
+GMAT FuelDepot.Attitude = CoordinateSystemFixed;
+GMAT FuelDepot.SPADSRPInterpolationMethod = Bilinear;
+GMAT FuelDepot.SPADSRPScaleFactorSigma = 1e+70;
+GMAT FuelDepot.SPADDragInterpolationMethod = Bilinear;
+GMAT FuelDepot.SPADDragScaleFactorSigma = 1e+70;
+GMAT FuelDepot.ModelFile = 'aura.3ds';
+GMAT FuelDepot.ModelOffsetX = 0;
+GMAT FuelDepot.ModelOffsetY = 0;
+GMAT FuelDepot.ModelOffsetZ = 0;
+GMAT FuelDepot.ModelRotationX = 0;
+GMAT FuelDepot.ModelRotationY = 0;
+GMAT FuelDepot.ModelRotationZ = 0;
+GMAT FuelDepot.ModelScale = 1;
+GMAT FuelDepot.AttitudeDisplayStateType = 'Quaternion';
+GMAT FuelDepot.AttitudeRateDisplayStateType = 'AngularVelocity';
+GMAT FuelDepot.AttitudeCoordinateSystem = EarthMJ2000Eq;
+GMAT FuelDepot.EulerAngleSequence = '321';
+
+%----------------------------------------
+%---------- Hardware Components
+%----------------------------------------
+
+Create ChemicalTank ChemicalTank1;
+GMAT ChemicalTank1.AllowNegativeFuelMass = true;
+GMAT ChemicalTank1.FuelMass = 14000;
+GMAT ChemicalTank1.Pressure = 1500;
+GMAT ChemicalTank1.Temperature = 20;
+GMAT ChemicalTank1.RefTemperature = 20;
+GMAT ChemicalTank1.Volume = 12;
+GMAT ChemicalTank1.FuelDensity = 1260;
+GMAT ChemicalTank1.PressureModel = PressureRegulated;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%----------------------------------------
+%---------- ForceModels
+%----------------------------------------
+
+Create ForceModel EarthProp_ForceModel;
+GMAT EarthProp_ForceModel.CentralBody = Earth;
+GMAT EarthProp_ForceModel.PrimaryBodies = {Earth};
+GMAT EarthProp_ForceModel.PointMasses = {Luna};
+GMAT EarthProp_ForceModel.Drag = None;
+GMAT EarthProp_ForceModel.SRP = Off;
+GMAT EarthProp_ForceModel.RelativisticCorrection = Off;
+GMAT EarthProp_ForceModel.ErrorControl = RSSStep;
+GMAT EarthProp_ForceModel.GravityField.Earth.Degree = 4;
+GMAT EarthProp_ForceModel.GravityField.Earth.Order = 4;
+GMAT EarthProp_ForceModel.GravityField.Earth.StmLimit = 100;
+GMAT EarthProp_ForceModel.GravityField.Earth.PotentialFile = 'JGM2.cof';
+GMAT EarthProp_ForceModel.GravityField.Earth.TideModel = 'None';
+
+Create ForceModel SolarProp_ForceModel;
+GMAT SolarProp_ForceModel.CentralBody = Sun;
+GMAT SolarProp_ForceModel.PointMasses = {Earth, Mars, Sun};
+GMAT SolarProp_ForceModel.Drag = None;
+GMAT SolarProp_ForceModel.SRP = Off;
+GMAT SolarProp_ForceModel.RelativisticCorrection = Off;
+GMAT SolarProp_ForceModel.ErrorControl = RSSStep;
+
+Create ForceModel SML1Prop_ForceModel;
+GMAT SML1Prop_ForceModel.CentralBody = Sun;
+GMAT SML1Prop_ForceModel.PointMasses = {Mars, Sun};
+GMAT SML1Prop_ForceModel.Drag = None;
+GMAT SML1Prop_ForceModel.SRP = Off;
+GMAT SML1Prop_ForceModel.RelativisticCorrection = Off;
+GMAT SML1Prop_ForceModel.ErrorControl = RSSStep;
+
+%----------------------------------------
+%---------- Propagators
+%----------------------------------------
+
+Create Propagator EarthProp;
+GMAT EarthProp.FM = EarthProp_ForceModel;
+GMAT EarthProp.Type = RungeKutta89;
+GMAT EarthProp.InitialStepSize = 60;
+GMAT EarthProp.Accuracy = 9.999999999999999e-12;
+GMAT EarthProp.MinStep = 0.001;
+GMAT EarthProp.MaxStep = 2700;
+GMAT EarthProp.MaxStepAttempts = 50;
+GMAT EarthProp.StopIfAccuracyIsViolated = true;
+
+Create Propagator SolarProp;
+GMAT SolarProp.FM = SolarProp_ForceModel;
+GMAT SolarProp.Type = RungeKutta89;
+GMAT SolarProp.InitialStepSize = 600;
+GMAT SolarProp.Accuracy = 9.999999999999999e-12;
+GMAT SolarProp.MinStep = 0;
+GMAT SolarProp.MaxStep = 864000;
+GMAT SolarProp.MaxStepAttempts = 50;
+GMAT SolarProp.StopIfAccuracyIsViolated = true;
+
+Create Propagator SML1Prop;
+GMAT SML1Prop.FM = SML1Prop_ForceModel;
+GMAT SML1Prop.Type = RungeKutta89;
+GMAT SML1Prop.InitialStepSize = 60;
+GMAT SML1Prop.Accuracy = 9.999999999999999e-12;
+GMAT SML1Prop.MinStep = 0.001;
+GMAT SML1Prop.MaxStep = 2700;
+GMAT SML1Prop.MaxStepAttempts = 50;
+GMAT SML1Prop.StopIfAccuracyIsViolated = true;
+
+%----------------------------------------
+%---------- Burns
+%----------------------------------------
+
+Create ImpulsiveBurn TOI;
+GMAT TOI.CoordinateSystem = Local;
+GMAT TOI.Origin = Earth;
+GMAT TOI.Axes = VNB;
+GMAT TOI.Element1 = 3;
+GMAT TOI.Element2 = 3;
+GMAT TOI.Element3 = 3;
+GMAT TOI.DecrementMass = true;
+GMAT TOI.Tank = {ChemicalTank1};
+GMAT TOI.Isp = 450;
+GMAT TOI.GravitationalAccel = 9.81;
+
+Create ImpulsiveBurn HOI;
+GMAT HOI.CoordinateSystem = Local;
+GMAT HOI.Origin = Sun;
+GMAT HOI.Axes = VNB;
+GMAT HOI.Element1 = 0;
+GMAT HOI.Element2 = 0;
+GMAT HOI.Element3 = 0;
+GMAT HOI.DecrementMass = true;
+GMAT HOI.Tank = {ChemicalTank1};
+GMAT HOI.Isp = 450;
+GMAT HOI.GravitationalAccel = 9.81;
+
+%----------------------------------------
+%---------- Coordinate Systems
+%----------------------------------------
+
+Create CoordinateSystem SML1Coords;
+GMAT SML1Coords.Origin = SML1;
+GMAT SML1Coords.Axes = ObjectReferenced;
+GMAT SML1Coords.XAxis = R;
+GMAT SML1Coords.ZAxis = N;
+GMAT SML1Coords.Primary = Sun;
+GMAT SML1Coords.Secondary = Mars;
+
+Create CoordinateSystem SunMJ2000Ec;
+GMAT SunMJ2000Ec.Origin = Sun;
+GMAT SunMJ2000Ec.Axes = MJ2000Ec;
+
+Create CoordinateSystem MarsEc;
+GMAT MarsEc.Origin = Mars;
+GMAT MarsEc.Axes = MJ2000Eq;
+
+%----------------------------------------
+%---------- Solvers
+%----------------------------------------
+
+Create DifferentialCorrector DC1;
+GMAT DC1.ShowProgress = true;
+GMAT DC1.ReportStyle = Normal;
+GMAT DC1.ReportFile = 'DifferentialCorrectorDC1.data';
+GMAT DC1.MaximumIterations = 400;
+GMAT DC1.DerivativeMethod = ForwardDifference;
+GMAT DC1.Algorithm = NewtonRaphson;
+
+Create FminconOptimizer DefaultSQP;
+GMAT DefaultSQP.ShowProgress = true;
+GMAT DefaultSQP.ReportStyle = Normal;
+GMAT DefaultSQP.ReportFile = 'FminconOptimizerDefaultSQP.data';
+GMAT DefaultSQP.MaximumIterations = 25;
+GMAT DefaultSQP.DiffMaxChange = '0.1000';
+GMAT DefaultSQP.DiffMinChange = '1.0000e-08';
+GMAT DefaultSQP.MaxFunEvals = '1000';
+GMAT DefaultSQP.TolX = '1.0000e-04';
+GMAT DefaultSQP.TolFun = '1.0000e-04';
+GMAT DefaultSQP.TolCon = '1.0000e-04';
+
+%----------------------------------------
+%---------- Subscribers
+%----------------------------------------
+
+Create OrbitView SolarView;
+GMAT SolarView.SolverIterations = Current;
+GMAT SolarView.UpperLeft = [ 0.1041176470588235 0.05714285714285714 ];
+GMAT SolarView.Size = [ 0.2135294117647059 0.7690476190476191 ];
+GMAT SolarView.RelativeZOrder = 123;
+GMAT SolarView.Maximized = false;
+GMAT SolarView.Add = {FuelDepot, Earth, Mars, Sun, SML1};
+GMAT SolarView.CoordinateSystem = SunMJ2000Ec;
+GMAT SolarView.DrawObject = [ true true true true true ];
+GMAT SolarView.DataCollectFrequency = 1;
+GMAT SolarView.UpdatePlotFrequency = 50;
+GMAT SolarView.NumPointsToRedraw = 0;
+GMAT SolarView.ShowPlot = true;
+GMAT SolarView.MaxPlotPoints = 20000;
+GMAT SolarView.ShowLabels = true;
+GMAT SolarView.ViewPointReference = Sun;
+GMAT SolarView.ViewPointVector = [ 0 0 500000000 ];
+GMAT SolarView.ViewDirection = Sun;
+GMAT SolarView.ViewScaleFactor = 1;
+GMAT SolarView.ViewUpCoordinateSystem = SunMJ2000Ec;
+GMAT SolarView.ViewUpAxis = Z;
+GMAT SolarView.EclipticPlane = Off;
+GMAT SolarView.XYPlane = On;
+GMAT SolarView.WireFrame = Off;
+GMAT SolarView.Axes = On;
+GMAT SolarView.Grid = Off;
+GMAT SolarView.SunLine = Off;
+GMAT SolarView.UseInitialView = On;
+GMAT SolarView.StarCount = 7000;
+GMAT SolarView.EnableStars = On;
+GMAT SolarView.EnableConstellations = On;
+
+Create OrbitView SML1View;
+GMAT SML1View.SolverIterations = Current;
+GMAT SML1View.UpperLeft = [ 0.2735294117647059 -0.008333333333333333 ];
+GMAT SML1View.Size = [ 0.41 0.9928571428571429 ];
+GMAT SML1View.RelativeZOrder = 131;
+GMAT SML1View.Maximized = false;
+GMAT SML1View.Add = {FuelDepot, SML1, Mars};
+GMAT SML1View.CoordinateSystem = SML1Coords;
+GMAT SML1View.DrawObject = [ true true true ];
+GMAT SML1View.DataCollectFrequency = 1;
+GMAT SML1View.UpdatePlotFrequency = 50;
+GMAT SML1View.NumPointsToRedraw = 0;
+GMAT SML1View.ShowPlot = true;
+GMAT SML1View.MaxPlotPoints = 30000;
+GMAT SML1View.ShowLabels = true;
+GMAT SML1View.ViewPointReference = SML1;
+GMAT SML1View.ViewPointVector = [ 0 0 300000 ];
+GMAT SML1View.ViewDirection = SML1;
+GMAT SML1View.ViewScaleFactor = 10;
+GMAT SML1View.ViewUpCoordinateSystem = SML1Coords;
+GMAT SML1View.ViewUpAxis = Y;
+GMAT SML1View.EclipticPlane = Off;
+GMAT SML1View.XYPlane = On;
+GMAT SML1View.WireFrame = Off;
+GMAT SML1View.Axes = On;
+GMAT SML1View.Grid = Off;
+GMAT SML1View.SunLine = Off;
+GMAT SML1View.UseInitialView = On;
+GMAT SML1View.StarCount = 7000;
+GMAT SML1View.EnableStars = On;
+GMAT SML1View.EnableConstellations = On;
+
+Create OrbitView EarthView;
+GMAT EarthView.SolverIterations = Current;
+GMAT EarthView.UpperLeft = [ 0.06411764705882353 0 ];
+GMAT EarthView.Size = [ 0.08 1 ];
+GMAT EarthView.RelativeZOrder = 127;
+GMAT EarthView.Maximized = false;
+GMAT EarthView.Add = {FuelDepot, Earth, Sun};
+GMAT EarthView.CoordinateSystem = EarthMJ2000Ec;
+GMAT EarthView.DrawObject = [ true true true ];
+GMAT EarthView.DataCollectFrequency = 1;
+GMAT EarthView.UpdatePlotFrequency = 50;
+GMAT EarthView.NumPointsToRedraw = 0;
+GMAT EarthView.ShowPlot = true;
+GMAT EarthView.MaxPlotPoints = 20000;
+GMAT EarthView.ShowLabels = true;
+GMAT EarthView.ViewPointReference = Earth;
+GMAT EarthView.ViewPointVector = [ 0 0 30000 ];
+GMAT EarthView.ViewDirection = Earth;
+GMAT EarthView.ViewScaleFactor = 1;
+GMAT EarthView.ViewUpCoordinateSystem = EarthMJ2000Ec;
+GMAT EarthView.ViewUpAxis = Z;
+GMAT EarthView.EclipticPlane = Off;
+GMAT EarthView.XYPlane = On;
+GMAT EarthView.WireFrame = Off;
+GMAT EarthView.Axes = On;
+GMAT EarthView.Grid = Off;
+GMAT EarthView.SunLine = Off;
+GMAT EarthView.UseInitialView = On;
+GMAT EarthView.StarCount = 7000;
+GMAT EarthView.EnableStars = On;
+GMAT EarthView.EnableConstellations = On;
+
+Create ReportFile DefaultReportFile;
+GMAT DefaultReportFile.SolverIterations = Current;
+GMAT DefaultReportFile.UpperLeft = [ 0 0 ];
+GMAT DefaultReportFile.Size = [ 0 0 ];
+GMAT DefaultReportFile.RelativeZOrder = 0;
+GMAT DefaultReportFile.Maximized = false;
+GMAT DefaultReportFile.Filename = 'DefaultReportFile.txt';
+GMAT DefaultReportFile.Precision = 16;
+GMAT DefaultReportFile.WriteHeaders = true;
+GMAT DefaultReportFile.LeftJustify = On;
+GMAT DefaultReportFile.ZeroFill = Off;
+GMAT DefaultReportFile.FixedWidth = true;
+GMAT DefaultReportFile.Delimiter = ' ';
+GMAT DefaultReportFile.ColumnWidth = 23;
+GMAT DefaultReportFile.WriteReport = true;
+
+%----------------------------------------
+%---------- Arrays, Variables, Strings
+%----------------------------------------
+Create Variable I LaunchTime;
+GMAT LaunchTime = 0.064;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%----------------------------------------
+%---------- Mission Sequence
+%----------------------------------------
+
+BeginMissionSequence;
+Propagate EarthProp(FuelDepot) {FuelDepot.ElapsedDays = .06};
+Target DC1 {SolveMode = Solve, ExitMode = DiscardAndContinue, ShowProgressWindow = true};
+   Vary DC1(TOI.Element1 = 3.674713495161995, {Perturbation = 0.0001, Lower = -10e300, Upper = 10e300, MaxStep = 1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary DC1(TOI.Element2 = 0.0387131214668027, {Perturbation = 0.0001, Lower = -10e300, Upper = 10e300, MaxStep = 1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary DC1(TOI.Element3 = 0.1960247072070722, {Perturbation = 0.0001, Lower = -10e300, Upper = 10e300, MaxStep = 1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Maneuver TOI(FuelDepot);
+   Propagate EarthProp(FuelDepot) {FuelDepot.Earth.Altitude = 929000, FuelDepot.ElapsedDays = 1};
+   Propagate SolarProp(FuelDepot) {FuelDepot.UTCModJulian = 30920.5};
+   Achieve DC1(FuelDepot.SML1Coords.X = 2.702367739417986e+05, {Tolerance = 1e-4});
+   Achieve DC1(FuelDepot.SML1Coords.Y = 0, {Tolerance = 1e-4});
+   Achieve DC1(FuelDepot.SML1Coords.Z = -2.884570650864365e+05, {Tolerance = 1e-4});
+EndTarget;  % For targeter DC1
+Target DC1 {SolveMode = Solve, ExitMode = DiscardAndContinue, ShowProgressWindow = true};
+   Vary DC1(HOI.Element1 = 1.829999358545553, {Perturbation = 0.0001, Lower = -10e300, Upper = 10e300, MaxStep = 1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary DC1(HOI.Element2 = -0.9265956831450722, {Perturbation = 0.0001, Lower = -10e300, Upper = 10e300, MaxStep = 1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Vary DC1(HOI.Element3 = 0.8154996131896413, {Perturbation = 0.0001, Lower = -10e300, Upper = 10e300, MaxStep = 1, AdditiveScaleFactor = 0.0, MultiplicativeScaleFactor = 1.0});
+   Maneuver HOI(FuelDepot);
+   Achieve DC1(FuelDepot.SML1Coords.VX = 0, {Tolerance = 1e-7});
+   Achieve DC1(FuelDepot.SML1Coords.VZ = 0, {Tolerance = 1e-7});
+   Achieve DC1(FuelDepot.SML1Coords.VY = -0.14004913, {Tolerance = 1e-7});
+EndTarget;  % For targeter DC1
+For I = 1:1:5;
+   Propagate SML1Prop(FuelDepot) {FuelDepot.SML1Coords.Y = 0};
+EndFor;
